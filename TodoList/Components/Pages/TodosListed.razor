@@ -1,0 +1,102 @@
+﻿@page "/mytest"
+@using TodoList.Classes
+@inject TodoService todoService
+@rendermode InteractiveServer
+
+<NavLink class="nav-link" href="test2">
+    <span class="oi oi-plus" aria-hidden="true">Add New Todo</span>
+</NavLink>
+
+<h3>TodosList</h3>
+
+@if (todos == null)
+{
+    <p>
+        Loading, please wait a few seconds....
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Todo No</th>
+                <th>Todo Label</th>
+                <th>Todo Description</th>
+                <th>Todo Completion</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in todos)
+            {
+                @if (!todo.IsCompleted)
+                {
+                    <tr>
+                        <td>@todo.Id</td>
+                        <td>@todo.Title</td>
+                        <td>@todo.Description</td>
+                        <td>
+                            <input type="checkbox" checked="@todo.IsCompleted" @onclick="@(()=>todoCompletion(todo))" /> Done
+                        </td>
+
+
+                        <td>
+                            <a class="btn btn-outline-warning" href="/test3/@todo.Id">
+                                <span>Edit task</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-danger" href="/test4/@todo.Id">
+                                <span>Delete task</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr style="background-color: #d4edda;">
+                        <td>@todo.Id</td>
+                        <td>@todo.Title</td>
+                        <td>@todo.Description</td>
+                        <td>
+                            <input type="checkbox" checked="@todo.IsCompleted" @onclick="@(()=>todoCompletion(todo))" /> Done
+                        </td>
+
+
+                        <td>
+                            <a class="btn btn-outline-warning" href="/test3/@todo.Id">
+                                <span>Edit task</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-danger" href="/test4/@todo.Id">
+                                <span>Delete task</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    List<Todo>? todos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todos = await todoService.GetAllTodos();
+    }
+
+    protected async Task todoCompletion(Todo todo) {
+        todo.IsCompleted = !todo.IsCompleted;
+        await todoService.UpdateTodoDetails(todo);
+    }
+
+
+
+}

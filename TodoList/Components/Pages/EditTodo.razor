@@ -1,0 +1,66 @@
+﻿@page "/test3/{Id:int}"
+@using TodoList.Classes
+@inject TodoService todoservice
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<h3>Edit Todo</h3>
+<hr />
+@if(todo is null){
+    <p>
+        This todo does not exist...
+    </p>
+}else{
+    <form>
+    <div class="row">
+        <div class="col col-md-8">
+            <div class="form-group">
+                <label for="Title" class="control-label">
+                    Todo Title
+                </label>
+                <input class="form-control" form="Title" value="@todo.Title"/>
+            </div>
+            <div class="form-group">
+                <label for="Description" class="control-label">
+                    Todo Description
+                </label>
+                <input class="form-control" form="Description" value="@todo.Description" />
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col col-md-8">
+            <div class="form-group d-flex justify-content-between">
+                <input class="form-control btn btn-success" value="Edit Todo" @onclick="@EditATodo" />
+                <input class="form-control btn btn-danger mx-4" value="Cancel" @onclick="@Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+}
+
+
+@code {
+
+    [Parameter]
+    public int id{ get; set; }
+    Todo? todo;
+    protected override async Task OnInitializedAsync(){
+      todo = await todoservice.GetOneTodoById(id);
+    }
+
+
+    protected async Task EditATodo()
+    {   if(todo is not null)
+        {
+            await todoservice.UpdateTodoDetails(todo);
+            NavigationManager.NavigateTo("mytest");
+        }
+       
+    }
+    protected Task Cancel()
+    {
+        NavigationManager.NavigateTo("mytest");
+        return Task.CompletedTask;
+    }
+
+}
